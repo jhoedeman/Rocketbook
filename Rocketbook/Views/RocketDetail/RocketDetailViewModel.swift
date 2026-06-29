@@ -1,4 +1,12 @@
+//
+//  RocketDetailViewModel.swift
+//  Rocketbook
+//
+//  Created by John A Hoedeman on 6/28/26.
+//
+
 import Foundation
+import Combine
 
 @MainActor
 final class RocketDetailViewModel: ObservableObject {

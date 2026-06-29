@@ -1,3 +1,10 @@
+//
+//  SpaceAPIClient.swift
+//  Rocketbook
+//
+//  Created by John A Hoedeman on 6/28/26.
+//
+
 import Foundation
 
 enum APIError: Error {
@@ -15,7 +22,6 @@ final class SpaceAPIClient {
 
     private lazy var decoder: JSONDecoder = {
         let d = JSONDecoder()
-        d.keyDecodingStrategy = .convertFromSnakeCase
         let fmt = ISO8601DateFormatter()
         fmt.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         d.dateDecodingStrategy = .custom { decoder in
@@ -34,7 +40,7 @@ final class SpaceAPIClient {
 
     private init() {
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 15
+        config.timeoutIntervalForRequest = 30
         self.session = URLSession(configuration: config)
     }
 
@@ -43,7 +49,8 @@ final class SpaceAPIClient {
         comps.queryItems = [
             URLQueryItem(name: "limit", value: "100"),
             URLQueryItem(name: "offset", value: "\((page - 1) * 100)"),
-            URLQueryItem(name: "ordering", value: "name")
+            URLQueryItem(name: "ordering", value: "name"),
+            URLQueryItem(name: "mode", value: "detailed")
         ]
         return try await fetch(comps.url!)
     }

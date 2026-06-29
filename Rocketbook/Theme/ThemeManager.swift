@@ -1,3 +1,10 @@
+//
+//  ThemeManager.swift
+//  Rocketbook
+//
+//  Created by John A Hoedeman on 6/28/26.
+//
+
 import SwiftUI
 import Combine
 

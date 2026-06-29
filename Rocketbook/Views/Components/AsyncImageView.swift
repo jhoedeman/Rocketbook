@@ -1,3 +1,10 @@
+//
+//  AsyncImageView.swift
+//  Rocketbook
+//
+//  Created by John A Hoedeman on 6/28/26.
+//
+
 import SwiftUI
 
 struct AsyncImageView: View {
@@ -31,7 +38,7 @@ struct AsyncImageView: View {
         Rectangle()
             .fill(theme.surface)
             .overlay(
-                Image(systemName: "rocket")
+                Image(systemName: "photo")
                     .font(.largeTitle)
                     .foregroundStyle(theme.secondaryText)
             )

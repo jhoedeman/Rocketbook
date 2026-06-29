@@ -1,8 +1,16 @@
+//
+//  RocketDetailView.swift
+//  Rocketbook
+//
+//  Created by John A Hoedeman on 6/28/26.
+//
+
 import SwiftUI
 
 struct RocketDetailView: View {
     let rocket: RocketConfig
     @StateObject private var vm: RocketDetailViewModel
+    @ObservedObject private var favorites = FavoritesManager.shared
     @Environment(\.theme) private var theme
 
     init(rocket: RocketConfig) {
@@ -12,17 +20,19 @@ struct RocketDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
+            LazyVStack(alignment: .leading, spacing: 24) {
                 heroImage
-                VStack(alignment: .leading, spacing: 24) {
-                    headerSection
-                    nextLaunchSection
-                    flightHistorySection
-                }
-                .padding()
+                    .padding(.bottom, -8)
+                headerSection
+                    .padding(.horizontal)
+                nextLaunchSection
+                    .padding(.horizontal)
+                flightHistorySection
+                    .padding(.horizontal)
+                    .padding(.bottom)
             }
         }
-        .background(theme.background.ignoresSafeArea())
+        .background(theme.background)
         .navigationBarTitleDisplayMode(.inline)
         .task { await vm.load() }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
@@ -55,6 +65,14 @@ struct RocketDetailView: View {
                     }
                 }
                 Spacer()
+                Button {
+                    favorites.toggle(rocket)
+                } label: {
+                    Image(systemName: favorites.isFavorite(rocket) ? "star.fill" : "star")
+                        .foregroundStyle(favorites.isFavorite(rocket) ? theme.accent : theme.secondaryText)
+                        .font(.title3)
+                }
+                .buttonStyle(.plain)
                 if rocket.reusable == true {
                     Label("Reusable", systemImage: "arrow.triangle.2.circlepath")
                         .font(.caption.bold())

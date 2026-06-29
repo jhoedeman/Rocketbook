@@ -1,4 +1,12 @@
+//
+//  MyLaunchesViewModel.swift
+//  Rocketbook
+//
+//  Created by John A Hoedeman on 6/28/26.
+//
+
 import Foundation
+import Combine
 
 @MainActor
 final class MyLaunchesViewModel: ObservableObject {
@@ -25,22 +33,29 @@ final class MyLaunchesViewModel: ObservableObject {
         isLoading = true
         defer { isLoading = false }
 
-        // Pull rocket configs from disk cache (already fetched by RocketListView)
         let allRockets = rocketCache.load() ?? []
         let tracked = allRockets.filter { subscribedIDs.contains($0.id) }
 
-        // Fetch upcoming launches in parallel
+        // Capture api before entering task group to avoid @MainActor cross-actor access
+        let api = self.api
+        var results: [Item] = []
+
         await withTaskGroup(of: Item.self) { group in
             for rocket in tracked {
+                let rocketID = rocket.id
                 group.addTask {
-                    let cache = CacheStore.upcomingLaunch(rocketID: rocket.id)
-                    let next = cache.load() ?? (try? await self.api.fetchUpcomingLaunch(rocketConfigID: rocket.id))
-                    return Item(rocket: rocket, nextLaunch: next ?? nil)
+                    let cache = await CacheStore.upcomingLaunch(rocketID: rocketID)
+                    let next: Launch?
+                    if let cached = await cache.load() {
+                        next = cached
+                    } else {
+                        next = try? await api.fetchUpcomingLaunch(rocketConfigID: rocketID)
+                    }
+                    return Item(rocket: rocket, nextLaunch: next)
                 }
             }
-            var results: [Item] = []
             for await item in group { results.append(item) }
-            items = results.sorted { $0.rocket.name < $1.rocket.name }
         }
+        items = results.sorted { $0.rocket.name < $1.rocket.name }
     }
 }

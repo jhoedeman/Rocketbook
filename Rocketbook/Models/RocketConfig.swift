@@ -1,3 +1,10 @@
+//
+//  RocketConfig.swift
+//  Rocketbook
+//
+//  Created by John A Hoedeman on 6/28/26.
+//
+
 import Foundation
 
 struct RocketConfig: Codable, Identifiable, Hashable {

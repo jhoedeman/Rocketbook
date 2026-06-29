@@ -1,3 +1,10 @@
+//
+//  AppTheme.swift
+//  Rocketbook
+//
+//  Created by John A Hoedeman on 6/28/26.
+//
+
 import SwiftUI
 
 struct AppTheme {
